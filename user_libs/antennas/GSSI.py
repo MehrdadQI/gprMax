@@ -547,26 +547,26 @@ def antenna_like_GSSI_400(x, y, z, resolution=0.001, rotate90=False):
         # Skid
         box(x, y, z, x + casesize[0], y + casesize[1], z + skidthickness - 0.002, 'hdpe', 'n', rotate90origin=rotate90origin) # new
 
-    # Excitation - Gaussian pulse
-    print('#waveform: gaussian 1 {} myGaussian'.format(excitationfreq))
+    # Excitation - chirp signal
+    print('#waveform: chirp 1 {} chirp'.format(excitationfreq))
     if src_type == 'voltage_source':
-        voltage_source('y', tx[0], tx[1], tx[2], sourceresistance, 'myGaussian', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
+        voltage_source('y', tx[0], tx[1], tx[2], sourceresistance, 'chirp', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
     elif src_type == 'transmission_line':
-        transmission_line('y', tx[0], tx[1], tx[2], sourceresistance, 'myGaussian', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
+        transmission_line('y', tx[0], tx[1], tx[2], sourceresistance, 'chirp', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
 
     # Output point - receiver bowtie
-    print('#waveform: gaussian 0 4e8 my_zero_src')
+    print('#waveform: chirp 0 4e8 my_zero_src')
 
     if resolution == 0.001 or resolution == 0.0005:
         if src_type == 'transmission_line':
-            transmission_line('y', tx[0] + 0.16, tx[1], tx[2], receiverresistance, 'my_zero_src', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
+            transmission_line('y', tx[0] + 0.16, tx[1], tx[2], receiverresistance, 'chirp', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
         elif src_type == 'voltage_source':
-            voltage_source('y', tx[0] + 0.16, tx[1], tx[2], receiverresistance, 'my_zero_src', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
+            voltage_source('y', tx[0] + 0.16, tx[1], tx[2], receiverresistance, 'chirp', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
         rx(tx[0] + 0.16, tx[1], tx[2], identifier='rx1', to_save=[output], polarisation='y', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
 
     elif resolution == 0.002:
         if src_type == 'transmission_line':
-            transmission_line('y', tx[0] + 0.162, tx[1], tx[2], receiverresistance, 'my_zero_src', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
+            transmission_line('y', tx[0] + 0.162, tx[1], tx[2], receiverresistance, 'chirp', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
         elif src_type == 'voltage_source':
             rx(tx[0] + 0.162, tx[1], tx[2], identifier='rx1', to_save=[output], polarisation='y', dxdy=(resolution, resolution), rotate90origin=rotate90origin)
 
