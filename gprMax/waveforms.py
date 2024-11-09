@@ -19,12 +19,12 @@
 import numpy as np
 
 from gprMax.utilities import round_value
-
+from scipy.signal import chirp
 
 class Waveform(object):
     """Definitions of waveform shapes that can be used with sources."""
 
-    types = ['gaussian', 'gaussiandot', 'gaussiandotnorm', 'gaussiandotdot', 'gaussiandotdotnorm', 'gaussianprime', 'gaussiandoubleprime', 'ricker', 'sine', 'contsine', 'impulse', 'user']
+    types = ['chirp','gaussian', 'gaussiandot', 'gaussiandotnorm', 'gaussiandotdot', 'gaussiandotdotnorm', 'gaussianprime', 'gaussiandoubleprime', 'ricker', 'sine', 'contsine', 'impulse', 'user']
 
     # Information about specific waveforms:
     #
@@ -43,6 +43,8 @@ class Waveform(object):
         self.chi = 0
         self.zeta = 0
         self.delay = 0
+        self.BW = 0 
+        self.cerntralFreq=0
 
     def calculate_coefficients(self):
         """Calculates coefficients (used to calculate values) for specific waveforms."""
@@ -53,6 +55,9 @@ class Waveform(object):
         elif self.type == 'gaussiandotdot' or self.type == 'gaussiandotdotnorm' or self.type == 'ricker':
             self.chi = np.sqrt(2) / self.freq
             self.zeta = np.pi**2 * self.freq**2
+        elif self.type == 'chirp':
+            self.BW = 240e6
+            self.centralFreq = (300+540)*1e6/2
 
     def calculate_value(self, time, dt):
         """Calculates value of the waveform at a specific time.
@@ -116,7 +121,13 @@ class Waveform(object):
 
         elif self.type == 'user':
             ampvalue = self.userfunc(time)
-
+        elif self.type == 'chirp':
+            f1=self.centralFreq-self.BW/2
+            f2=f1+self.BW
+            fs=1/dt
+            t = np.arange(0,time,dt)
+            chirp_signal= chirp(t, f0=f1, f1=f2, t1=time , method='linear')
+            ampvalue= 100*chirp_signal
         ampvalue *= self.amp
 
         return ampvalue
